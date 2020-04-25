@@ -1,2 +1,5 @@
-<view class="index other">{{prop}}-{{flag}}</view>
-<other></other>
+<view>text</view>
+
+<!-- 代码高亮 -->
+<view style="margin-top: 20px; margin-bottom: 20px; font-size: 20px;">代码高亮展示</view>
+<highLight codeText="{{codeText}}"></highLight>
