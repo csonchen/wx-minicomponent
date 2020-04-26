@@ -1,5 +1,5 @@
 import HtmlToJson from './utils/html2json';
-import {etSystemInfo} from './utils/util';
+import { getSystemInfo } from './utils/util';
 
 Component({
   properties: {
