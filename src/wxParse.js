@@ -1,23 +1,31 @@
 import HtmlToJson from './utils/html2json';
-import { getSystemInfo } from './utils/util';
+import showdown from './utils/showdown.js';
+import { getSystemInfo, bindData } from './utils/util';
 
 Component({
   properties: {
     nodes: {
-      type: null,
-      observer(val) {
-        if (val) {
-          if (typeof val === 'string') { // 初始为html富文本字符串
-            this._parseHtml(val)
-          } else if (Array.isArray(val)) { // html 富文本解析成节点数组
-            this.setData({ nodesData: val })
-          } else { // 其余为单个节点对象
-            const nodesData = [ val ]
-            this.setData({ nodesData })
-          }
-        }
-      }
+      type: null
     },
+
+    language: {
+      type: String,
+      value: 'html' // 可选：html | markdown (md)
+    }
+  },
+
+  attached() {
+    const { language, nodes } = this.data
+
+    if (language === 'html') {
+      this._parseNodes(nodes)
+    }
+
+    if (language === 'markdown' || language === 'md') {
+      const converter = new showdown.Converter();
+      const parseNodes = converter.makeHtml(nodes);
+      this._parseNodes(parseNodes)
+    }
   },
 
   data: {
@@ -34,14 +42,25 @@ Component({
 
       transData.view = {}
       transData.view.imagePadding = 0
-
       this.setData({
         nodesData: transData.nodes,
         bindData: {
           [bindName]: transData
         }
       })
+      bindData(bindName, transData)
       console.log(this.data)
+    },
+
+    _parseNodes(nodes) {
+      if (typeof nodes === 'string') { // 初始为html富文本字符串
+        this._parseHtml(nodes)
+      } else if (Array.isArray(nodes)) { // html 富文本解析成节点数组
+        this.setData({ nodesData: nodes })
+      } else { // 其余为单个节点对象
+        const nodesData = [ nodes ]
+        this.setData({ nodesData })
+      }
     },
 
     /**
@@ -56,8 +75,26 @@ Component({
         
         //因为无法获取view宽度 需要自定义padding进行计算，稍后处理
         const recal = this._wxAutoImageCal(width, height)
-        this.setData({ width: recal.imageWidth })
+        this.setData({
+          width: recal.imageWidth,
+          height: recal.imageHeight,
+          [`nodesData[${0}].loaded`]: true,
+        })
       }
+    },
+
+    /**
+     * 预览图片
+     * @param {*} e 
+     */
+    wxParseImgTap(e) {
+      const { src } = e.target.dataset
+      const bindName = 'wxParseData'
+      const { imageUrls } = bindData(bindName)
+      wx.previewImage({ 
+        current: src,
+        urls: imageUrls
+      })
     },
 
     /**

@@ -17,7 +17,7 @@
         <block wx:for="{{item.nodes}}" wx:for-index="index" wx:key="index" wx:for-item="child">
           <view class="wxParse-ol-inner">
             <view class="mr5">{{index + 1}}. </view>
-            <view class="flex-full">
+            <view class="flex-full overflow-hide">
               <wxParse nodes="{{child}}"></wxParse>
             </view>
           </view>
@@ -31,7 +31,7 @@
         <block wx:for="{{item.nodes}}" wx:for-index="index" wx:key="index" wx:for-item="child">
           <view class="wxParse-ul-inner">
             <view class="wxParse-li-circle"></view>
-            <view class="flex-full">
+            <view class="flex-full overflow-hide">
               <wxParse nodes="{{child}}"></wxParse>
             </view>
           </view>
@@ -58,18 +58,26 @@
 
     <!-- img类型 -->
     <block wx:elif="{{item.tag == 'img'}}">
-      <!-- bindtap="wxParseImgTap" -->
-      <image 
-        class="{{item.classStr}} wxParse-{{item.tag}}" 
-        data-from="{{item.from}}" 
-        data-src="{{item.attr.src}}" 
-        data-idx="{{item.imgIndex}}" 
-        src="{{item.attr.src}}" 
-        mode="aspectFit" 
-        bindload="wxParseImgLoad"  
-        mode="widthFix" 
-        style="width:{{width}}px;"
-      />
+      <view class="wxParse-img-inner">
+        <image 
+          class="{{item.classStr}} wxParse-{{item.tag}} {{item.loaded ? 'wxParse-img-fadein' : ''}}" 
+          data-from="{{item.from}}" 
+          data-src="{{item.attr.src}}" 
+          data-idx="{{item.imgIndex}}" 
+          src="{{ item.loaded ? item.attr.src : '' }}" 
+          bindtap="wxParseImgTap"
+          mode="widthFix" 
+          style="width:{{width}}px;height:{{height}}px;"
+        />
+        <image hidden="{{item.loaded}}" class="img-loading" src="./images/loading.png" />
+        <image 
+          style="display: none;" 
+          mode="widthFix" 
+          data-from="{{item.from}}" 
+          src="{{ item.attr.src }}"
+          bindload="wxParseImgLoad" 
+        />
+      </view>
     </block>
 
     <!-- a类型 -->
