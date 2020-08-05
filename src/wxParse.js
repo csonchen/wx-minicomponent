@@ -150,7 +150,7 @@ Component({
         })
       } else {
         wx.navigateTo({
-          url: `/components/wxParse/webviewPage/webviewPage?src=${src}`
+          url: `/miniprogram_npm/wx-minicomponent/wxParse/webviewPage/webviewPage?src=${src}`
         })
       }
     }
