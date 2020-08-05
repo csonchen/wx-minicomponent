@@ -33,7 +33,12 @@ const md =  '# 我是一级标题\n' +
             <div style="margin: 10px 0 10px;">
             <b>二. a标签跳转</b>
             </div> 
-            <a href="https://www.baidu.com" target="_blank">a标签跳转</a>&nbsp; 
+            <div>
+              <a href="https://www.baidu.com" title="我是外链跳转" target="_blank">a标签跳转（外链跳转）</a>&nbsp; 
+            </div>
+            <div>
+              <a href="/pages/index/index" title="我是内链跳转" target="_blank">a标签跳转（内链跳转）</a>&nbsp; 
+            </div>
           
             <div style="margin: 10px 0 10px;">
             <b>三. 内联标签</b>

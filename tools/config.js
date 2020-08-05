@@ -88,5 +88,5 @@ module.exports = {
     }
   },
 
-  copy: ['images', 'utils'], // 将会复制到目标目录
+  copy: ['images', 'utils', 'wxParse'], // 将会复制到目标目录
 }

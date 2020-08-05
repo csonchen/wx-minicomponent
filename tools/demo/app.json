@@ -1,6 +1,7 @@
 {
   "pages":[
-    "pages/index/index"
+    "pages/index/index",
+    "components/wxParse/webviewPage/webviewPage"
   ],
   "window":{
     "backgroundTextStyle":"light",
