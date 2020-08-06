@@ -1,6 +1,6 @@
 {
   "name": "wx-minicomponent",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "",
   "main": "miniprogram_dist/index.js",
   "scripts": {
