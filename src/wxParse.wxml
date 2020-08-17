@@ -67,7 +67,7 @@
           src="{{ item.loaded ? item.attr.src : '' }}" 
           bindtap="wxParseImgTap"
           mode="widthFix" 
-          style="width:{{width}}px;height:{{height}}px;"
+          style="width:{{item.attr.width || width}}px;height:{{item.attr.height || height}}px; {{item.styleStr}}"
         />
         <image hidden="{{item.loaded}}" class="img-loading" src="./images/loading.png" />
         <image 
@@ -156,7 +156,9 @@
   <block wx:elif="{{item.node == 'text'}}">
     <view class="WxEmojiView wxParse-inline" style="{{item.styleStr}}">
       <block wx:for="{{item.textArray}}" wx:key="index" wx:for-index="index" wx:for-item="textItem">
-        <block class="{{textItem.text == '\\n' ? 'wxParse-hide':''}}" wx:if="{{textItem.node == 'text'}}">{{textItem.text}}</block>
+        <block class="{{textItem.text == '\\n' ? 'wxParse-hide':''}}" wx:if="{{textItem.node == 'text'}}">
+          <text selectable="{{true}}">{{textItem.text}}</text>
+        </block>
         <block wx:elif="{{textItem.node == 'element'}}">
           <image class="wxEmoji" src="{{textItem.baseSrc}}{{textItem.text}}" />
         </block>
