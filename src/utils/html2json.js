@@ -27,6 +27,7 @@ var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,n
 
 // Special Elements (can contain anything)
 var special = makeMap("wxxxcode-style,script,style,view,scroll-view,block");
+
 function makeMap(str) {
     var obj = {}, items = str.split(",");
     for (var i = 0; i < items.length; i++)
@@ -46,17 +47,32 @@ function removeDOCTYPE(html) {
 }
 
 function trimHtml(html) {
-  return html
-        .replace(/\r?\n+/g, '')
+    return html
+        // .replace(/\r?\n+/g, '')
+        // .replace(/\n+/g, '')
         .replace(/<!--.*?-->/ig, '')
-        .replace(/\/\*.*?\*\//ig, '')
+        // .replace(/\/\*.*?\*\//ig, '')
         .replace(/[ ]+</ig, '<')
 }
+
+/**
+ * 过滤掉小程序无法展示的标签
+ * @param {*} html 
+ */
+function removeInvalidTags(html) {
+    return html
+        .replace(/\<head(.|\n)*<\/head\>/ig, '')
+        .replace(/\<title(.|\n)*<\/title\>/ig, '')
+        .replace(/\<script(.|\n)*<\/script\>/ig, '')
+        .replace(/\<meta(.|\n)*<\/meta\>/ig, '')
+        .replace(/\<style(.|\n)*<\/style\>/gm, '')
+} 
 
 
 function html2json(html, bindName) {
     //处理字符串
     html = removeDOCTYPE(html);
+    html = removeInvalidTags(html)
     html = trimHtml(html);
     html = wxDiscode.strDiscode(html);
     //生成node节点
@@ -69,13 +85,15 @@ function html2json(html, bindName) {
     };
     var index = 0;
     HTMLParser(html, {
-        start: function (tag, attrs, unary) {
+        start: function (tag, attrs, unary, content) {
             //debug(tag, attrs, unary);
             // node for this element
             var node = {
                 node: 'element',
                 tag: tag,
             };
+            // 判断是否需要添加标签主体内容
+            content && (node['content'] = content)
 
             if (bufArray.length === 0) {
                 node.index = index.toString()
@@ -174,7 +192,7 @@ function html2json(html, bindName) {
             if(node.tag === 'source'){
                 results.source = node.attr.src;
             }
-            
+
             if (unary) {
                 // if this tag doesn't have end tag
                 // like <img src="hoge.png"/>
@@ -199,7 +217,7 @@ function html2json(html, bindName) {
                 node.attr.src = results.source;
                 delete results.source;
             }
-            
+
             if (bufArray.length === 0) {
                 results.nodes.push(node);
             } else {

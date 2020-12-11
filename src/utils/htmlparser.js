@@ -9,6 +9,8 @@ var startTag = /^<([-A-Za-z0-9_]+)((?:\s+[a-zA-Z_:][-a-zA-Z0-9_:.]*(?:\s*=\s*(?:
 	endTag = /^<\/([-A-Za-z0-9_]+)[^>]*>/,
 	attr = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
 
+var codeTag = /^<code.*?>([\s\S]*?)<\/code>/
+
 // Empty Elements - HTML 5
 var empty = makeMap("area,base,basefont,br,col,frame,hr,img,input,link,meta,param,embed,command,keygen,source,track,wbr");
 
@@ -27,6 +29,9 @@ var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,n
 
 // Special Elements (can contain anything)
 var special = makeMap("wxxxcode-style,script,style,view,scroll-view,block");
+
+// 存储code标签的内容
+var codeContent = '';
 
 function HTMLParser(html, handler) {
 	var index, chars, match, stack = [], last = html;
@@ -66,6 +71,12 @@ function HTMLParser(html, handler) {
 				match = html.match(startTag);
 
 				if (match) {
+					var tagName = match[1]
+					// code标签需要过滤文本节点
+					if (tagName === 'code') {
+						var codeTagMatch = html.match(codeTag)
+						codeContent = codeTagMatch[1] || ''
+					}
 					html = html.substring(match[0].length);
 					match[0].replace(startTag, parseStartTag);
 					chars = false;
@@ -76,22 +87,22 @@ function HTMLParser(html, handler) {
 				index = html.indexOf("<");
 				var text = ''
 				while (index === 0) {
-                                  text += "<";
-                                  html = html.substring(1);
-                                  index = html.indexOf("<");
+					text += "<";
+					html = html.substring(1);
+					index = html.indexOf("<");
 				}
 				text += index < 0 ? html : html.substring(0, index);
 				html = index < 0 ? "" : html.substring(index);
 
-				if (handler.chars)
+				if (handler.chars && text.trim() !== '') {
 					handler.chars(text);
+				}
 			}
 
 		} else {
-
 			html = html.replace(new RegExp("([\\s\\S]*?)<\/" + stack.last() + "[^>]*>"), function (all, text) {
 				text = text.replace(/<!--([\s\S]*?)-->|<!\[CDATA\[([\s\S]*?)]]>/g, "$1$2");
-				if (handler.chars)
+				if (handler.chars && text.trim() !== '')
 					handler.chars(text);
 
 				return "";
@@ -144,9 +155,11 @@ function HTMLParser(html, handler) {
 			});
 
 			if (handler.start) {
-				handler.start(tagName, attrs, unary);
+				var tagContent = codeContent || ''
+				handler.start(tagName, attrs, unary, tagContent);
+				// 重置
+				codeContent = ''
 			}
-
 		}
 	}
 

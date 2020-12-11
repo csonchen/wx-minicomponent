@@ -103,7 +103,7 @@ function strGreeceDiscode(str){
 
 function strcharacterDiscode(str){
   // 加入常用解析
-  str = str.replace(/&nbsp;/g, ' ');
+  str = str.replace(/&nbsp;/g, '\xa0');
   str = str.replace(/&quot;/g, "'");
   str = str.replace(/&amp;/g, '&');
   // str = str.replace(/&lt;/g, '‹');
@@ -176,8 +176,8 @@ function strOtherDiscode(str){
 }
 
 function strMoreDiscode(str){
-  str = str.replace(/\r\n/g,"");  
-  str = str.replace(/\n/g,"");
+  // str = str.replace(/\r\n/g,"");  
+  // str = str.replace(/\n/g,"");
 
   // str = str.replace(/code/g,"wxxxcode-style");
   return str;
